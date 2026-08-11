@@ -137,10 +137,6 @@ start:
     mov bl, 0x05
     call kaku
 
-    mov si, randommm
-    mov bl, 0x05
-    call kaku
-
     hang:
     jmp jikan
 
@@ -159,10 +155,6 @@ start:
     randomm:
     dw 320
     db "f4t1'i gotten sikin", 0
-
-    randommm:
-    dw 480
-    db "Fuki said: f-f4t1 wo h-hentai, hanatte oite kudasai!!!", 0
 
     times 510-($-$$) db 0
     dw 0xAA55
