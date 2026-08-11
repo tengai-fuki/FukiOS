@@ -129,13 +129,71 @@ start:
     mov bl, 0x70
     call kaku
 
-    mov si, random
+    mov si, ichi_gyou
     mov bl, 0x05
     call kaku
 
-    mov si, randomm
+    mov si, ni_gyou
     mov bl, 0x05
     call kaku
+
+    mov si, san_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, yon_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, go_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, roku_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, nana_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, hachi_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, kyuu_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, juu_gyou
+    mov bl, 0x05
+    call kaku
+
+    mov si, juu_ichi_gyou                                                                                   
+    mov bl, 0x05                                                                                        
+    call kaku                                                                                           
+                                                                                                     
+    mov si, juu_ni_gyou                                                                                     
+    mov bl, 0x05                                                                                                                                                                                   
+                                                                                                       
+    mov si, juu_san_gyou                                                                                    
+    mov bl, 0x05                                                                                        
+    call kaku                                                                                           
+                                                                                                       
+    mov si, juu_yon_gyou                                                                                    
+    mov bl, 0x05                                                                                        
+    call kaku                                                                                           
+                                                                                                       
+    mov si, juu_go_gyou                                                                                     
+    mov bl, 0x05                                                                                        
+    call kaku                                                                                           
+                                                                                                        
+    mov si, juu_roku_gyou                                                                                   
+    mov bl, 0x05                                                                                        
+    call kaku                                                                                           
+                                                                                                       
+    mov si, juu_nana_gyou                                                                                   
+    mov bl, 0x05                                                                    
 
     hang:
     jmp jikan
@@ -148,13 +206,13 @@ start:
     dw 3978
     db "jikan ", 0
 
-    random:
+    ichi_gyou:
     dw 160
-    db "i'm super power bitch!!!", 0
+    db "1. koko ni suki ni kaite", 0
 
-    randomm:
+    ni_gyou:
     dw 320
-    db "f4t1'i gotten sikin", 0
-
-    times 510-($-$$) db 0
+    db "2. f4t1'i gotten sikin", 0
+    
+    times 510-($-$$) db 0                                                                               
     dw 0xAA55
