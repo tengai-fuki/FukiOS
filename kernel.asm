@@ -147,53 +147,7 @@ start:
 
     mov si, go_gyou
     mov bl, 0x05
-    call kaku
-
-    mov si, roku_gyou
-    mov bl, 0x05
-    call kaku
-
-    mov si, nana_gyou
-    mov bl, 0x05
-    call kaku
-
-    mov si, hachi_gyou
-    mov bl, 0x05
-    call kaku
-
-    mov si, kyuu_gyou
-    mov bl, 0x05
-    call kaku
-
-    mov si, juu_gyou
-    mov bl, 0x05
-    call kaku
-
-    mov si, juu_ichi_gyou                                                                                   
-    mov bl, 0x05                                                                                        
-    call kaku                                                                                           
-                                                                                                     
-    mov si, juu_ni_gyou                                                                                     
-    mov bl, 0x05                                                                                                                                                                                   
-                                                                                                       
-    mov si, juu_san_gyou                                                                                    
-    mov bl, 0x05                                                                                        
-    call kaku                                                                                           
-                                                                                                       
-    mov si, juu_yon_gyou                                                                                    
-    mov bl, 0x05                                                                                        
-    call kaku                                                                                           
-                                                                                                       
-    mov si, juu_go_gyou                                                                                     
-    mov bl, 0x05                                                                                        
-    call kaku                                                                                           
-                                                                                                        
-    mov si, juu_roku_gyou                                                                                   
-    mov bl, 0x05                                                                                        
-    call kaku                                                                                           
-                                                                                                       
-    mov si, juu_nana_gyou                                                                                   
-    mov bl, 0x05                                                                    
+    call kaku                                                                    
 
     hang:
     jmp jikan
@@ -212,6 +166,18 @@ start:
 
     ni_gyou:
     dw 320
+    db "2. f4t1'i gotten sikin", 0
+
+    san_gyou:
+    dw 480
+    db "2. f4t1'i gotten sikin", 0
+
+    yon_gyou:
+    dw 640
+    db "2. f4t1'i gotten sikin", 0
+
+    go_gyou:
+    dw 800
     db "2. f4t1'i gotten sikin", 0
     
     times 510-($-$$) db 0                                                                               
