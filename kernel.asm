@@ -170,15 +170,15 @@ start:
 
     san_gyou:
     dw 480
-    db "2. f4t1'i gotten sikin", 0
+    db "3.", 0
 
     yon_gyou:
     dw 640
-    db "2. f4t1'i gotten sikin", 0
+    db "4.", 0
 
     go_gyou:
     dw 800
-    db "2. f4t1'i gotten sikin", 0
+    db "5.", 0
     
     times 510-($-$$) db 0                                                                               
     dw 0xAA55
