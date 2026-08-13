@@ -4,7 +4,7 @@ org 0x7C00
 start:
     cli
     
-    xor ax, ax
+    xor ax, axhhgfhfghfgh
     xor dx, dx
     xor bx, bx
     mov ds, ax
