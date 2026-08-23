@@ -5,7 +5,7 @@
 #include<time.h>
 #include<conio.h>
 
-//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
+//-------------------------------------------------------------------------------------------------
 
 void login(){
 
@@ -75,6 +75,42 @@ else{
   }
 }
 
+void bj(){
+	int bjcard = 0;
+	int dealercard = 0;
+	char hit[10];
+	char stay[10];
+
+	srand((unsigned)time(NULL));
+
+	bjcard = (rand() % 10) + 2;
+	bjcard += (rand() % 10) + 2;
+
+	printf("%d\n", bjcard);
+
+	while(bjcard < 21){
+	printf("hit or stay\n");
+	scanf("%s", hit);
+
+	if(strcmp(hit, "hit") == 0){
+		 bjcard += (rand() % 10) + 2;
+		 printf("%d\n", bjcard);	
+	}
+	else if(strcmp(hit, "stay") == 0){
+ 		break;
+	}
+ }
+ if(bjcard > 21){
+ 	printf("kaybettin\n");
+ }
+ else if(bjcard <= 21){
+ 	while(dealercard < 17){
+ 	dealercard += (rand() % 10) + 2;
+ 	printf("%d\n", dealercard);
+  }
+ }
+}
+
 void help(){
 	printf("shiki: fuki, jill, calc, roulette, poweroff\n");
 }
@@ -84,6 +120,8 @@ HWND windows = GetActiveWindow();
 SendMessage(windows, WM_CLOSE, 0, 0);
 exit(0);
 }
+
+//-------------------------------------------------------------------------------------------------
 
 int main(){
 
@@ -114,6 +152,10 @@ roulette();
 
 else if(strcmp(shell, "help") == 0){
 help();
+}
+
+else if(strcmp(shell, "bj") == 0){
+bj();
 }
 
 else if(strcmp(shell, "poweroff") == 0){
