@@ -58,6 +58,8 @@ __asm__(
     ".text\n"
 );
 
+#define moji_iro 0x50
+
 void kenban();
 void sumasu(char iro);
 void gamen(int gyou, int retsu, int haba, int iro);
@@ -68,13 +70,12 @@ void fuki(){
     sumasu(0x10);
     gamen(0, 0, 80, 0x70);
     gamen(24, 0, 80, 0x70);
-    mado(8, 21, 39, 9, 0x00);
-    mado(7, 20, 38, 9, 0xB0);
-    kaku(0, 1, "FukiOS", 0x70);
-    kenban();
+    //mado(8, 21, 39, 9, 0x00);
+    //mado(7, 20, 38, 9, 0xB0);
+    kaku(0, 1, "FukiOS", 0x70);  
 
     while(1){
-
+        kenban(); 
     }
 }
 
@@ -93,7 +94,6 @@ void kaku(int gyou, int retsu, char *mesaj, char iro) {
         i++;
         sousai += 2;
     }
-    
 }
 
 void sumasu(char iro){
@@ -103,7 +103,7 @@ void sumasu(char iro){
         video[i] = ' ';
         video[i + 1] = iro;
     } 
-  }
+}
 
 void gamen(int gyou, int retsu, int haba, int iro){
 
@@ -117,7 +117,6 @@ void gamen(int gyou, int retsu, int haba, int iro){
         video[sousai + 1] = iro;
         sousai += 2;
     }
-
 }
 
 void mado(int gyou, int retsu, int haba, int takasa, int iro){
@@ -128,15 +127,53 @@ void mado(int gyou, int retsu, int haba, int takasa, int iro){
     }
 }
 
-void kenban(){
-    unsigned char tus_kodu;
+void kenban() {
+    unsigned char durum;
+    unsigned char kei_koodo;
+    
+    static int kuusoru_gyou = 1;
+    static int kuusoru_retsu = 0;
 
-    while(1){
-        __asm__ __volatile__("inb %1, %0" : "=a"(tus_kodu) : "Nd"(0x60));
+static const char klavye_haritasi[256] = {
+   0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 'q', 'w', 'e', 'r',
 
-        if(tus_kodu > 0){
+  't', 'y', 'u', '\xA1', 'o', 'p', '[', ']', '\n', '\f', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
 
+  '\'', '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ', 0, '\x98',
+
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+
+   0, 0, 0, 0, 0, 0, 0, 0,           
+};
+    volatile char *video = (volatile char*)0xB8000;
+
+    __asm__ __volatile__("inb %1, %0" : "=a"(durum) : "Nd"(0x64));
+    
+    if (!(durum & 1)) {
+        return; 
+    }
+        
+    __asm__ __volatile__("inb %1, %0" : "=a"(kei_koodo) : "Nd"(0x60));
+    
+    if (kei_koodo > 0 && kei_koodo < 0x80) {
+        if (kei_koodo == 1) {
+            __asm__ __volatile__("cli; hlt");
         }
+        
+        char harf = klavye_haritasi[kei_koodo];
+        if (harf != 0) {
+            video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2] = harf;
+            video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2 + 1] = moji_iro;
+            kuusoru_retsu++;
 
+            if (kuusoru_retsu >= 80) {
+                kuusoru_retsu = 0;
+                kuusoru_gyou++;
+            }
+        }
     }
 }
