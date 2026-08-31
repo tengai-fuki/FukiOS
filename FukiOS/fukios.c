@@ -1,28 +1,3 @@
-/*asm(
-    ".code16gcc\n"
-    ".section .boot,\"ax\"\n"
-    ".global _start\n"
-    "_start:\n"
-    "cli\n"
-    "xor %ax, %ax\n"
-    "mov %ax, %ds\n"
-    "mov %ax, %es\n"
-    "mov %ax, %ss\n"
-    "mov $0x7c00, %sp\n"
-    "sti\n"
-    "movb $0x02, %ah\n"
-    "movb $0x10, %al\n"
-    "movb $0x00, %ch\n"
-    "movb $0x02, %cl\n"
-    "movb $0x00, %dh\n"
-    "movw $0x7E00, %bx\n"
-    "int $0x13\n"
-    "jmp main\n"
-    ".org 510\n"
-    ".word 0xAA55\n"
-    ".text\n"
-);*/
-
 __asm__(
     ".code16gcc\n"
     ".section .boot, \"ax\"\n"
@@ -52,13 +27,19 @@ __asm__(
 
     "jmp fuki\n"
 
+    ".global kuusoru_gyou\n"
+    "kuusoru_gyou: .byte 12\n"
+    
+    ".global kuusoru_retsu\n"
+    "kuusoru_retsu: .byte 12\n"
+
     ".org 0x1fe\n"
     ".word 0xaa55\n"
     ".att_syntax prefix\n"
     ".text\n"
 );
 
-#define moji_iro 0x50
+#define moji_iro 0x12
 
 static inline void port_kaku(unsigned short port, unsigned char deta) {
     __asm__ __volatile__ ( "outb %0, %1" : : "a"(deta), "Nd"(port) );
@@ -78,25 +59,26 @@ void kaku(int gyou, int retsu, char *mesaj, char iro);
 void mado(int gyou, int retsu, int haba, int takasa, int iro);
 
 void fuki(){
-    sumasu(0x10);
+    ivt_junbi();
+    sumasu(moji_iro);
     gamen(0, 0, 80, 0x70);
     gamen(24, 0, 80, 0x70);
-    kaku(0, 1, "FukiOS", 0x70);  
-    ivt_junbi();
+    kaku(0, 1, "FukiOS", 0x70);
+    kaku(0, 68, "sentakushi", 0x70);  
 
     while(1){
         tokei_koushin();
     }
 }
 
-__attribute__((interrupt)) void kenban_isr(void *frame);
-
 __attribute__((interrupt)) void kenban_isr(void *frame) {
     unsigned char kei_koodo;
     
-    static int kuusoru_gyou = 1;
-    static int kuusoru_retsu = 0;
-    static const char keiboodo_chizu[256] = {
+    static int kuusoru_gyou __attribute__((section(".text"))) = 1;
+    static int kuusoru_retsu __attribute__((section(".text"))) = 0;
+    static int shouten_kondate __attribute__((section(".text"))) = 0;
+
+    static char keiboodo_chizu[256] __attribute__((section(".text"))) = {
    0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', '\t', 'q', 'w', 'e', 'r',
 
   't', 'y', 'u', '\xA1', 'o', 'p', '[', ']', '\n', '\f', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
@@ -115,30 +97,58 @@ __attribute__((interrupt)) void kenban_isr(void *frame) {
 
     __asm__ __volatile__("inb %1, %0" : "=a"(kei_koodo) : "Nd"(0x60));
 
-    if (kei_koodo > 0 && kei_koodo < 0x80) {
-        if (kei_koodo == 1) {
-            __asm__ __volatile__("cli; hlt");
+    if (kei_koodo == 0x0F) {
+        if (shouten_kondate == 0) {
+            shouten_kondate = 1; 
+
+            kaku(0, 68, "sentakushi", 0x07);
+        } 
+        else {
+            shouten_kondate = 0; 
+            
+            kaku(0, 68, "sentakushi", 0x70);
         }
-        
-        char harf = keiboodo_chizu[kei_koodo];
+        port_kaku(0x20, 0x20);
+        return;
+    }
+
+if (shouten_kondate == 0){
+
+     char harf = keiboodo_chizu[kei_koodo];
         if (harf != 0) {
+
             if (harf == '\b') {
+
                 if (kuusoru_retsu > 0) kuusoru_retsu--;
-                else if (kuusoru_gyou > 0) { kuusoru_gyou--; kuusoru_retsu = 79; }
+                else if (kuusoru_gyou > 1) { kuusoru_gyou--; kuusoru_retsu = 79; }
                 
                 video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2] = ' ';
-                video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2 + 1] = 0x10; 
+                video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2 + 1] = moji_iro; 
             } 
+
+            else if (harf == '\n') {
+
+                kuusoru_retsu = 0;
+                kuusoru_gyou++;
+
+                if(kuusoru_gyou >= 24){
+                    kuusoru_gyou = 1;
+                }
+            }
+            
             else {
+
                 video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2] = harf;
-                video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2 + 1] = 0x10;
+                video[(kuusoru_gyou * 80 + kuusoru_retsu) * 2 + 1] = moji_iro;
                 kuusoru_retsu++;
+
                 if (kuusoru_retsu >= 80) { kuusoru_retsu = 0; kuusoru_gyou++; }
             }
         }
     }
-    port_kaku(0x20, 0x20); 
+        port_kaku(0x20, 0x20); 
 }
+
 
 void ivt_junbi() {
     unsigned short *ivt = (unsigned short *)0x00000;
@@ -221,10 +231,10 @@ void tokei_koushin() {
     unsigned char fun = rtc_yomu(0x02);
     unsigned char byou = rtc_yomu(0x00);
     
-    kaku(23, 146, "jikan", 0x70);
-    bcd_kaku(23, 152, ji, 0x70);
-    kaku(23, 154, ":", 0x70);
-    bcd_kaku(23, 155, fun, 0x70);
+    kaku(23, 149, "jikan", 0x70);
+    bcd_kaku(23, 155, ji, 0x70);
     kaku(23, 157, ":", 0x70);
-    bcd_kaku(23, 158, byou, 0x70);
+    bcd_kaku(23, 158, fun, 0x70);
+    //kaku(23, 157, ":", 0x70);
+    //bcd_kaku(23, 158, byou, 0x70);
 }
