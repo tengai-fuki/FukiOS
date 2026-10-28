@@ -3,3 +3,4 @@
 ただ、Fuki-様がめっちゃ好きなだけ... それだけ。
 512バイトのMBRで動作、219文字まで。
 bura nasıl site amk?
+öğrendim la
